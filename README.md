@@ -1,11 +1,11 @@
-# AI 桌宠 · 榜样复盘（7 人协作）
+# 暖屿（nuanyu）· AI 桌宠与榜样复盘
 
 ## 新人只看这里
 
 1. 打开仓库，点右上角 **Fork** 不用；让管理员把你加成 Collaborator。
 2. 把代码拉到电脑：
    ```bash
-   git clone https://github.com/xiaowen-prog/ai-desktop-pet.git
+   git clone https://github.com/xiaowen-prog/nuanyu.git
    cd ai-desktop-pet
    git checkout develop
    ```
