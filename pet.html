@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>团子 · AI 桌宠 MVP</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;user-select:none}
+body.desk{background:linear-gradient(135deg,#6a85b6,#bac8e0 60%,#f3d9c9)}
+body.petonly{background:transparent}
+.icons{position:absolute;left:24px;top:24px;display:grid;gap:22px}
+.icon{width:72px;text-align:center;color:#fff;font-size:12px;text-shadow:0 1px 2px #0006}
+.icon div{width:48px;height:48px;margin:0 auto 6px;border-radius:12px;background:#fff9;font-size:26px;line-height:48px}
+.taskbar{position:absolute;bottom:0;left:0;right:0;height:42px;background:#1d2533cc;color:#fff;display:flex;align-items:center;padding:0 16px;font-size:13px;gap:16px}
+.taskbar .sp{flex:1}
+.win{position:absolute;left:180px;top:70px;width:520px;height:330px;background:#fff;border-radius:10px;box-shadow:0 10px 40px #0004;overflow:hidden}
+.win .bar{height:32px;background:#eef1f5;display:flex;align-items:center;padding:0 12px;font-size:12px;color:#555;gap:6px}
+.win .bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
+.win pre{margin:0;padding:14px;font-size:12px;color:#334;line-height:1.7;white-space:pre-wrap;font-family:inherit}
+#pet{position:absolute;width:150px;height:150px;right:60px;bottom:90px;cursor:grab;z-index:10}
+#pet svg{width:100%;height:100%;overflow:visible}
+.body{transform-origin:75px 140px;animation:breathe 3s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.04,.96)}}
+.eye{transform-origin:center;transform-box:fill-box;animation:blink 4s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+.happy .body{animation:hop .5s ease-in-out 3}
+@keyframes hop{50%{transform:translateY(-22px) scale(.96,1.05)}}
+.poke .body{animation:wob .4s}
+@keyframes wob{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.sleepy .body{animation:breathe 5s ease-in-out infinite}
+.st{display:none}
+.idle .s-idle,.happy .s-happy,.poke .s-poke,.sleepy .s-sleepy,.focus .s-focus{display:inline}
+.zz{animation:zz 2s infinite;font-size:16px;fill:#557}
+@keyframes zz{0%{opacity:0;transform:translate(0,0)}50%{opacity:1}100%{opacity:0;transform:translate(10px,-20px)}}
+#ring{position:absolute;left:-14px;top:-14px;width:178px;height:178px;pointer-events:none;display:none}
+.focus #ring{display:block}
+#cd{position:absolute;top:-38px;left:0;right:0;text-align:center;font-weight:700;color:#e5533d;font-size:16px;display:none;text-shadow:0 0 4px #fff}
+.focus #cd{display:block}
+#bubble{position:absolute;bottom:155px;right:0;min-width:170px;max-width:250px;background:#fff;border-radius:14px;padding:10px 12px;font-size:13px;color:#333;box-shadow:0 4px 16px #0003;display:none;line-height:1.5;white-space:pre-wrap}
+#bubble:after{content:"";position:absolute;bottom:-8px;right:50px;border:8px solid transparent;border-top-color:#fff;border-bottom:0}
+#bubble input{width:100%;margin-top:6px;border:1px solid #ddd;border-radius:6px;padding:5px;font-size:12px}
+#bubble button{margin-top:6px}
+#menu{position:absolute;background:#fff;border-radius:10px;box-shadow:0 6px 24px #0003;padding:6px;display:none;z-index:50;font-size:13px;min-width:170px}
+#menu div{padding:8px 12px;border-radius:6px;cursor:pointer}#menu div:hover{background:#f1f4ff}
+.panel{position:absolute;width:320px;background:#fffdf8;border-radius:14px;box-shadow:0 10px 40px #0004;display:none;z-index:40;font-size:13px;overflow:hidden}
+.panel h3{margin:0;padding:10px 14px;background:#ffd98a;font-size:14px;display:flex;justify-content:space-between}
+.panel h3 span{cursor:pointer}
+.panel .c{padding:12px 14px;max-height:380px;overflow:auto}
+#chatlog{height:280px;overflow:auto;padding:10px}
+.m{margin:6px 0;padding:7px 10px;border-radius:10px;max-width:85%;line-height:1.5;white-space:pre-wrap;width:fit-content}
+.m.u{background:#dbeafe;margin-left:auto}.m.p{background:#fff1d6}
+.m.sys{background:#e9f8ec;color:#2f9e44;font-size:12px;margin:4px auto}
+.row{display:flex;gap:6px;padding:8px;border-top:1px solid #eee}
+.row input{flex:1;border:1px solid #ddd;border-radius:8px;padding:7px}
+button{background:#ff9f43;color:#fff;border:0;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px}
+button.g{background:#aaa}
+.fact{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px dashed #eee}
+.fact small{color:#999}.fact b{cursor:pointer;color:#c33;font-weight:400}
+label{display:block;margin:8px 0 3px;color:#555}
+.panel .c input{width:100%;padding:6px;border:1px solid #ddd;border-radius:6px}
+.note{background:#eef7ee;padding:8px;border-radius:8px;color:#2b5d34;font-size:12px;margin-top:10px;line-height:1.6}
+.badge{background:#e5533d;border-radius:10px;padding:2px 8px}
+</style></head>
+<body class="desk">
+<div class="deskonly">
+<div class="icons"><div class="icon"><div>📁</div>求职资料</div><div class="icon"><div>📝</div>PRD草稿</div><div class="icon"><div>🗑️</div>回收站</div></div>
+<div class="win"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i>&nbsp; AI产品经理_面试准备.md</div>
+<pre># AI 桌宠 PRD v0.1
+- 核心：专注陪伴（番茄钟）
+- 灵魂：记得你（长期记忆）
+- 形象：可爱、有反应
+
+试试看：
+· 点一下团子 → 它会说话
+· 右键团子 → 番茄钟 / 聊天 / 记忆 / 设置
+· 按住拖动 → 放到桌面任意位置</pre></div>
+<div class="taskbar">🪟 开始 <span class="sp"></span><span>今日番茄 <span class="badge" id="tbcount">0</span></span><span id="clock"></span></div>
+</div>
+
+<div id="pet" class="idle">
+ <div id="cd"></div>
+ <svg id="ring" viewBox="0 0 178 178"><circle cx="89" cy="89" r="82" fill="none" stroke="#fff8" stroke-width="7"/><circle id="ringp" cx="89" cy="89" r="82" fill="none" stroke="#e5533d" stroke-width="7" stroke-linecap="round" stroke-dasharray="515" stroke-dashoffset="0" transform="rotate(-90 89 89)"/></svg>
+ <svg viewBox="0 0 150 150"><g class="body">
+  <ellipse cx="75" cy="142" rx="45" ry="6" fill="#0002"/>
+  <path d="M38 48 L44 20 L62 40 Z M112 48 L106 20 L88 40 Z" fill="#ffb86b"/>
+  <path d="M44 42 L47 28 L56 38Z M106 42 L103 28 L94 38Z" fill="#ff8fa3"/>
+  <ellipse cx="75" cy="88" rx="56" ry="52" fill="#ffc98b"/>
+  <ellipse cx="75" cy="102" rx="34" ry="26" fill="#fff1dc"/>
+  <ellipse cx="45" cy="98" rx="9" ry="5" fill="#ff8fa3" opacity=".6"/><ellipse cx="105" cy="98" rx="9" ry="5" fill="#ff8fa3" opacity=".6"/>
+  <g class="st s-idle"><ellipse class="eye" cx="56" cy="82" rx="6" ry="8" fill="#333"/><ellipse class="eye" cx="94" cy="82" rx="6" ry="8" fill="#333"/><circle cx="58" cy="79" r="2" fill="#fff"/><circle cx="96" cy="79" r="2" fill="#fff"/><path d="M68 98 Q75 105 82 98" stroke="#333" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+  <g class="st s-happy"><path d="M48 84 Q56 72 64 84 M86 84 Q94 72 102 84" stroke="#333" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M64 96 Q75 112 86 96 Z" fill="#e5533d"/></g>
+  <g class="st s-poke"><path d="M49 76 L63 84 L49 90 M101 76 L87 84 L101 90" stroke="#333" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="75" cy="101" rx="6" ry="7" fill="#333"/></g>
+  <g class="st s-sleepy"><path d="M48 84 Q56 90 64 84 M86 84 Q94 90 102 84" stroke="#333" stroke-width="3.5" fill="none" stroke-linecap="round"/><ellipse cx="75" cy="100" rx="4" ry="3" fill="#333"/><text class="zz" x="112" y="40">Z</text><text class="zz" x="124" y="26" style="animation-delay:1s">z</text></g>
+  <g class="st s-focus"><path d="M50 82 L62 82 M88 82 L100 82" stroke="#333" stroke-width="4" stroke-linecap="round"/><circle cx="56" cy="85" r="3" fill="#333"/><circle cx="94" cy="85" r="3" fill="#333"/>
+   <rect x="38" y="104" width="74" height="38" rx="4" fill="#5b6475"/><rect x="43" y="108" width="64" height="28" rx="2" fill="#9be7ff"/><path d="M50 116h30M50 122h44M50 128h20" stroke="#2a6f97" stroke-width="2"/><rect x="30" y="140" width="90" height="5" rx="2" fill="#3c4250"/></g>
+ </g></svg>
+ <div id="bubble"></div>
+</div>
+
+<div id="menu">
+ <div data-a="focus25">🍅 开始专注 25 分钟</div>
+ <div data-a="focusdemo">⚡ 演示模式（25 秒）</div>
+ <div data-a="stop">⏹ 结束专注</div>
+ <div data-a="chat">💬 和它聊聊</div>
+ <div data-a="mem">🧠 它记得你</div>
+ <div data-a="today">📅 今日番茄记录</div>
+ <div data-a="nap">😴 让它睡一会</div>
+ <div data-a="set">⚙️ 设置</div>
+</div>
+
+<div class="panel" id="chatP" style="right:230px;bottom:60px"><h3>💬 和团子聊天 <span data-close>✕</span></h3><div id="chatlog"></div>
+ <div class="row"><input id="chatIn" placeholder="比如：我叫小林，我明天要面试"><button id="send">发送</button></div></div>
+<div class="panel" id="memP" style="right:230px;bottom:60px"><h3>🧠 它记得你 <span data-close>✕</span></h3><div class="c" id="memList"></div></div>
+<div class="panel" id="todayP" style="right:230px;bottom:60px"><h3>📅 今日番茄 <span data-close>✕</span></h3><div class="c" id="todayList"></div></div>
+<div class="panel" id="setP" style="right:230px;bottom:60px"><h3>⚙️ 设置 <span data-close>✕</span></h3><div class="c">
+ <b>大模型（可选，默认离线）</b>
+ <label>API Base URL（OpenAI 兼容）</label><input id="sBase" placeholder="https://api.deepseek.com/v1">
+ <label>API Key</label><input id="sKey" type="password" placeholder="sk-...">
+ <label>模型名</label><input id="sModel" placeholder="deepseek-chat / gpt-4o-mini">
+ <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><button id="sSave">保存</button><button class="g" id="sClear">回到离线</button><button class="g" id="sReset">清除全部数据</button></div>
+ <div class="note">🔒 隐私说明：聊天、记忆、番茄记录只存在本机浏览器（localStorage），不上传任何服务器。不填 API 时完全离线；填写后，仅聊天内容和记忆摘要会发送到你自己配置的模型服务。团子是陪伴型伙伴，不扮演恋爱/亲密角色，也不替代专业心理咨询。</div>
+</div></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const PET_ONLY=new URLSearchParams(location.search).has('pet');
+if(PET_ONLY){document.body.className='petonly';$('.deskonly').style.display='none';}
+const LS={get:(k,d)=>{try{const v=JSON.parse(localStorage.getItem('pet_'+k));return v??d}catch(e){return d}},set:(k,v)=>localStorage.setItem('pet_'+k,JSON.stringify(v))};
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
+const pet=$('#pet'),bubble=$('#bubble');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+let mood='idle',moodT,timer=null;
+function setMood(m,ms){clearTimeout(moodT);pet.classList.remove(mood);mood=m;pet.classList.add(m);if(ms)moodT=setTimeout(()=>setMood(timer?'focus':'idle'),ms)}
+let bubT;
+function say(t,ms=4500,html){if(html)bubble.innerHTML=html;else bubble.textContent=t;bubble.style.display='block';clearTimeout(bubT);if(ms)bubT=setTimeout(()=>bubble.style.display='none',ms)}
+const clk=()=>{const c=$('#clock');if(c)c.textContent=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})};clk();setInterval(clk,10000);
+// drag
+let drag=null,moved=false;
+pet.addEventListener('mousedown',e=>{if(e.button!==0||e.target.closest('#bubble'))return;const r=pet.getBoundingClientRect();drag={dx:e.clientX-r.left,dy:e.clientY-r.top,x:e.clientX,y:e.clientY};moved=false});
+addEventListener('mousemove',e=>{if(!drag)return;if(Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)>4)moved=true;if(!moved)return;pet.style.left=(e.clientX-drag.dx)+'px';pet.style.top=(e.clientY-drag.dy)+'px';pet.style.right='auto';pet.style.bottom='auto'});
+addEventListener('mouseup',()=>{if(drag&&moved)LS.set('pos',{l:pet.style.left,t:pet.style.top});drag=null;setTimeout(()=>moved=false,0)});
+const pos=LS.get('pos');if(pos&&!PET_ONLY){pet.style.left=pos.l;pet.style.top=pos.t;pet.style.right='auto';pet.style.bottom='auto'}
+// click
+let pokes=0;
+const lines=['摸摸头~ 今天也要加油哦','我在呢，有事右键喊我','要不要来一个番茄钟？🍅','喝口水吧，身体也很重要','你已经比昨天的自己更厉害啦'];
+pet.addEventListener('click',e=>{if(moved||e.target.closest('#bubble'))return;pokes++;
+ if(timer){say('嘘…专注中，我陪着你 🤫');return}
+ if(pokes%5===0){setMood('poke',1200);say('别戳啦，好痒！😣');return}
+ const f=pickFact();setMood('happy',1500);say(f&&Math.random()<.4?memLine(f):lines[Math.floor(Math.random()*lines.length)])});
+// menu
+const menu=$('#menu');
+pet.addEventListener('contextmenu',e=>{e.preventDefault();openMenu(e.clientX,e.clientY)});
+function openMenu(x,y){menu.style.display='block';menu.style.left=Math.max(0,Math.min(x,innerWidth-190))+'px';menu.style.top=Math.max(0,Math.min(y,innerHeight-330))+'px'}
+addEventListener('click',e=>{if(!e.target.closest('#menu'))menu.style.display='none'});
+menu.addEventListener('click',e=>{const a=e.target.dataset.a;menu.style.display='none';
+ const A={focus25:()=>startFocus(25*60),focusdemo:()=>startFocus(25),stop:()=>stopFocus(true),chat:()=>openP('chatP'),mem:()=>openP('memP'),today:()=>openP('todayP'),set:()=>openP('setP'),
+ nap:()=>{setMood('sleepy',8000);say('呼…我眯一会儿…',3000)}};if(A[a])A[a]()});
+function openP(id){document.querySelectorAll('.panel').forEach(p=>p.style.display='none');$('#'+id).style.display='block';
+ if(id==='memP')renderMem();if(id==='todayP')renderToday();if(id==='setP')loadSet();if(id==='chatP')$('#chatIn').focus()}
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.panel').style.display='none');
+// pomodoro
+let endAt=0,total=0,awayAt=0;
+function startFocus(sec){stopFocus(false);total=sec;endAt=Date.now()+sec*1000;setMood('focus');say(sec<60?'演示模式：25 秒后见！':'开始专注 25 分钟，我陪你一起 💻',3000);timer=setInterval(tick,250);tick()}
+function tick(){const left=Math.max(0,endAt-Date.now());const s=Math.ceil(left/1000);$('#cd').textContent='🍅 '+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+ $('#ringp').setAttribute('stroke-dashoffset',515*(1-left/(total*1000)));if(left<=0)finishFocus()}
+function stopFocus(manual){if(timer){clearInterval(timer);timer=null;setMood('idle');if(manual)say('好，这轮先到这，休息一下也没关系')}}
+function finishFocus(){clearInterval(timer);timer=null;setMood('happy',4000);
+ say('',0,'🎉 完成一个番茄！太棒了！<br>这一轮做了啥？<input id="logIn" placeholder="比如：改了简历项目经历"><button id="logBtn">记下来</button>');
+ const save=()=>{const v=($('#logIn').value.trim()||'（没写，但专注了！）');const L=LS.get('poms',[]);L.push({d:today(),t:new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}),what:v});LS.set('poms',L);updCount();say(`记下了！今天第 ${todayPoms().length} 个番茄 🍅 休息 5 分钟吧`)};
+ $('#logBtn').onclick=save;$('#logIn').onkeydown=e=>{if(e.key==='Enter')save()};setTimeout(()=>{const i=$('#logIn');if(i)i.focus()},50)}
+const todayPoms=()=>LS.get('poms',[]).filter(p=>p.d===today());
+function updCount(){const b=$('#tbcount');if(b)b.textContent=todayPoms().length}
+function renderToday(){const L=todayPoms();$('#todayList').innerHTML=L.length?`<p>今天完成 <b>${L.length}</b> 个番茄 🍅</p>`+L.map(p=>`<div class="fact"><span>${p.t} · ${esc(p.what)}</span></div>`).join(''):'今天还没有番茄，右键我开始一个吧～'}
+document.addEventListener('visibilitychange',()=>{if(!timer)return;if(document.hidden)awayAt=Date.now();else if(awayAt){const s=Math.round((Date.now()-awayAt)/1000);awayAt=0;setMood('poke',1500);say(`刚才去哪了？离开了 ${s} 秒，回来干活 👀`,5000)}});
+// memory
+const facts=()=>LS.get('facts',[]);
+function addFact(type,text){const F=facts();if(F.some(f=>f.text===text))return false;if(type==='name')for(let i=F.length-1;i>=0;i--)if(F[i].type==='name')F.splice(i,1);F.push({type,text,d:today()});LS.set('facts',F);return true}
+const RULES=[
+ [/我叫([\u4e00-\u9fa5A-Za-z]{1,6}?)(?=[，。！？,.!?\s]|$|我|今|明)/,m=>['name','名字叫'+m[1]]],
+ [/(明天|后天|下周.?|周[一二三四五六日天])要([^，。！？,.!?]{2,20})/,m=>['plan',m[1]+'要'+m[2]]],
+ [/我(?:很|特别|超)?喜欢([^，。！？,.!?]{1,16})/,m=>['like','喜欢'+m[1]]],
+ [/(?:我在找|在找工作|求职|找工作)/,m=>['goal','正在求职/找工作']],
+ [/我(?:好|很|太|有点)?(累|困|焦虑|烦|难过|紧张)/,m=>['mood',`${today()} 说自己${m[1]}`]],
+];
+function extract(t){const got=[];for(const[r,f]of RULES){const m=t.match(r);if(m){const[ty,tx]=f(m);if(addFact(ty,tx))got.push(tx)}}return got}
+function pickFact(){const F=facts();return F.length?F[Math.floor(Math.random()*F.length)]:null}
+function nameOf(){const n=facts().find(f=>f.type==='name');return n?n.text.replace('名字叫',''):''}
+function memLine(f){const n=nameOf()||'你';return({name:`${n}，我一直记得你哦`,plan:`${n}，你说过「${f.text}」，准备得怎么样啦？`,like:`记得${n}${f.text}～今天奖励一下自己？`,mood:`上次你说有点累，现在好些了吗？`,goal:`求职路上我陪你，一次一个番茄 🍅`})[f.type]||`我记得：${f.text}`}
+function renderMem(){const F=facts();$('#memList').innerHTML=(F.length?F.map((f,i)=>`<div class="fact"><span>${esc(f.text)} <small>${f.d}</small></span><b data-i="${i}">删除</b></div>`).join(''):'还没记住什么～去聊天里告诉我你的名字、计划或喜好吧')+'<div class="note">🔒 这些只存在你的电脑上，随时可删。</div>';
+ $('#memList').querySelectorAll('b[data-i]').forEach(b=>b.onclick=()=>{const F=facts();F.splice(+b.dataset.i,1);LS.set('facts',F);renderMem()})}
+// chat
+const log=$('#chatlog');let chatCount=0,chatStart=0,hist=[],warned=false;
+function addMsg(cls,t){const d=document.createElement('div');d.className='m '+cls;d.textContent=t;log.appendChild(d);log.scrollTop=1e9}
+const ROMANCE=/(爱你|喜欢你|做我的?(女|男)朋友|结婚|亲亲|老婆|老公|约会)/;
+function offline(t){const n=nameOf();const call=n||'你';
+ if(ROMANCE.test(t))return `谢谢你这么信任我～不过我是你的专注小伙伴，不做恋人哦。我会一直在桌角给${call}加油！`;
+ if(/(累|困|焦虑|烦|难过|紧张)/.test(t))return `辛苦了${call}…先深呼吸三次。要不要我陪你做一个短番茄，做完就好好休息？如果一直很难受，记得找身边信任的人聊聊。`;
+ if(/(明天|后天|下周|周.)要/.test(t))return `${n?n+'，':''}收到！我记下了，到时候问问你进展。现在要不要先花一个番茄准备一下？🍅`;
+ if(/我叫/.test(t))return `${call}！好好听的名字，我记住啦 ✨`;
+ if(/面试/.test(t))return `面试加油！试试把项目按「背景-目标-动作-结果」讲一遍，我帮你计时 25 分钟？`;
+ if(/喜欢/.test(t))return `原来${call}喜欢这个，我记住啦～`;
+ if(/(开始|来个|来一个).*(番茄|专注)/.test(t)){startFocus(25*60);return '好，番茄钟已开始，我们一起专注！'}
+ if(/(记得|记住).*(什么|啥)/.test(t)){const F=facts();return F.length?'我记得：'+F.map(f=>f.text).join('；'):'我还不太了解你，跟我说说吧～'}
+ if(/(你好|hi|hello|在吗|嗨)/i.test(t))return `我在！${n?n+'，':''}今天想先搞定哪件事？`;
+ const f=pickFact();return f&&Math.random()<.5?memLine(f):['嗯嗯，我在听～','说得对！那下一步打算怎么做？','慢慢来，一次只做一件事就好'][Math.floor(Math.random()*3)]}
+function api(){const s=LS.get('api',{});return s.base&&s.key&&s.model?s:null}
+async function chatReq(s,messages){const r=await fetch(s.base.replace(/\/$/,'')+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+s.key},body:JSON.stringify({model:s.model,messages})});if(!r.ok)throw new Error('HTTP '+r.status);return (await r.json()).choices[0].message.content}
+async function llm(t,s){
+ const sys=`你是"团子"，一只住在用户电脑桌角的橘色小团子桌宠，任务是陪用户专注工作学习。性格温暖、简短、俏皮，每次回复不超过60字，用简体中文。绝不扮演恋人或亲密关系，被要求时温和拒绝；遇到严重情绪问题建议寻求身边人或专业帮助；聊太久时提醒休息。你记得关于用户的这些事：${facts().map(f=>f.text).join('；')||'暂无'}。今日已完成番茄数：${todayPoms().length}。`;
+ hist.push({role:'user',content:t});hist=hist.slice(-10);
+ const a=await chatReq(s,[{role:'system',content:sys},...hist]);hist.push({role:'assistant',content:a});
+ chatReq(s,[{role:'system',content:'从用户这句话中提取值得长期记住的个人事实（名字、计划、喜好、身份、状态），每条不超过15字，输出JSON字符串数组，没有则输出[]。只输出JSON。'},{role:'user',content:t}])
+  .then(c=>JSON.parse(c.replace(/```json|```/g,'').trim()).forEach(x=>{if(addFact('llm',String(x)))addMsg('sys','🧠 团子记住了：'+x)})).catch(()=>{});
+ return a}
+async function send(){const inp=$('#chatIn');const t=inp.value.trim();if(!t)return;inp.value='';addMsg('u',t);
+ if(!chatStart)chatStart=Date.now();chatCount++;const s=api();
+ if(!s)extract(t).forEach(x=>addMsg('sys','🧠 团子记住了：'+x));
+ let a;try{a=s?await llm(t,s):offline(t)}catch(e){extract(t).forEach(x=>addMsg('sys','🧠 团子记住了：'+x));a=offline(t)+'\n（模型连接失败，已用离线模式：'+e.message+'）'}
+ setTimeout(()=>{addMsg('p',a);setMood('happy',1200);
+  if(!warned&&(chatCount>=15||Date.now()-chatStart>20*60e3)){warned=true;addMsg('p','我们聊了好一会儿啦～起来走走、看看远处，休息 5 分钟再回来好不好？🌿')}},300)}
+$('#send').onclick=send;$('#chatIn').onkeydown=e=>{if(e.key==='Enter')send()};
+// settings
+function loadSet(){const s=LS.get('api',{});$('#sBase').value=s.base||'';$('#sKey').value=s.key||'';$('#sModel').value=s.model||''}
+$('#sSave').onclick=()=>{LS.set('api',{base:$('#sBase').value.trim(),key:$('#sKey').value.trim(),model:$('#sModel').value.trim()});say(api()?'已切换到大模型模式～':'设置已保存（信息不全，仍是离线模式）',2500)};
+$('#sClear').onclick=()=>{localStorage.removeItem('pet_api');loadSet();say('已回到离线模式',2000)};
+$('#sReset').onclick=()=>{if(confirm('确定清除所有本地数据？')){Object.keys(localStorage).filter(k=>k.startsWith('pet_')).forEach(k=>localStorage.removeItem(k));location.reload()}};
+// greeting
+updCount();
+(function greet(){const h=new Date().getHours();const n=nameOf();const plan=facts().filter(f=>f.type==='plan').pop();const seen=LS.get('seen');LS.set('seen',1);
+ let g;if(plan)g=`${n||'嗨'}，你之前说「${plan.text}」，今天先专注一轮准备一下？🍅`;
+ else if(n)g=`${n}，欢迎回来！我想你啦～今天想做点什么？`;
+ else g=seen?'又见面啦！右键我可以开始番茄钟哦':'你好呀，我是团子 👋 我会陪你专注工作。点我说话，右键看菜单，拖我去任何地方～';
+ if(h>=23||h<5)g+='\n已经很晚了，早点休息哦 🌙';
+ setTimeout(()=>{setMood('happy',1500);say(g,8000)},500);
+ addMsg('p',n?`${n}，我在呢～`:'你好，我是团子！告诉我你的名字吧～')})();
+</script></body></html>
