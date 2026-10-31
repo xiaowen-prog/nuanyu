@@ -6,7 +6,7 @@
 2. 把代码拉到电脑：
    ```bash
    git clone https://github.com/xiaowen-prog/nuanyu.git
-   cd ai-desktop-pet
+   cd nuanyu
    git checkout develop
    ```
 3. 改代码前先开自己的分支（把名字换成你的）：
